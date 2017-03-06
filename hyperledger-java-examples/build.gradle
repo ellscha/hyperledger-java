@@ -20,3 +20,11 @@ dependencies {
     compile 'org.slf4j:slf4j-log4j12:1.7.21'
     compile project(':hyperledger-java-client')
 }
+
+apply plugin: 'application'
+apply plugin: 'java'
+
+mainClassName = "me.grapebaba.hyperledger.fabric.examples.FabricExample"
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8

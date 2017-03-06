@@ -38,20 +38,27 @@ import java.util.concurrent.TimeUnit;
  */
 public class FabricExample {
     private static final HttpLoggingInterceptor HTTP_LOGGING_INTERCEPTOR = new HttpLoggingInterceptor();
+    private static final String peerURL = "https://23de79dc4ad449fea82f05ada9833efc-vp3.us.blockchain.ibm.com:5003";
+    private static final String enrollIdentifier_1 = "user_type1_0";
+    private static final String ENROLL_SECRET_1 = "455e20936f";
+    private static final String enrollIdentifier_2 = "admin";
+    private static final String ENROLL_SECRET_2 = "ee9dc5466a";
 
+//Everytime you run this code, you need to change the User types to have it work. Also note if you change the peer, you cannot reuse a used identifier as according to Bluemix.
+//However you can just swap the two (enrollIdentifier1 and 2 as well as the corresponding secrets) each time if the goal is a succesful run.
     static {
         HTTP_LOGGING_INTERCEPTOR.setLevel(HttpLoggingInterceptor.Level.BODY);
     }
 
-    private static final Fabric FABRIC = Hyperledger.fabric("http://localhost:5000", HTTP_LOGGING_INTERCEPTOR);
+    private static final Fabric FABRIC = Hyperledger.fabric(peerURL, HTTP_LOGGING_INTERCEPTOR);
 
     private static final Logger LOG = LoggerFactory.getLogger(FabricExample.class);
 
     public static void main(String[] args) throws Exception {
         FABRIC.createRegistrar(
                 Secret.builder()
-                        .enrollId("jim")
-                        .enrollSecret("6avZQLwcUe9b")
+                        .enrollId(enrollIdentifier_1)
+                        .enrollSecret(ENROLL_SECRET_1)
                         .build())
                 .subscribe(new Action1<OK>() {
                     @Override
@@ -66,7 +73,7 @@ public class FabricExample {
                     }
                 });
 
-        FABRIC.getRegistrar("jim")
+        FABRIC.getRegistrar(enrollIdentifier_1)
                 .subscribe(new Action1<OK>() {
                     @Override
                     public void call(OK ok) {
@@ -74,7 +81,7 @@ public class FabricExample {
                     }
                 });
 
-        FABRIC.getRegistrarECERT("jim")
+        FABRIC.getRegistrarECERT(enrollIdentifier_1)
                 .subscribe(new Action1<OK>() {
                     @Override
                     public void call(OK ok) {
@@ -82,7 +89,7 @@ public class FabricExample {
                     }
                 });
 
-        FABRIC.getRegistrarTCERT("jim")
+        FABRIC.getRegistrarTCERT(enrollIdentifier_1)
                 .subscribe(new Action1<OK1>() {
                     @Override
                     public void call(OK1 ok) {
@@ -108,7 +115,7 @@ public class FabricExample {
                                                         .function("init")
                                                         .args(Arrays.asList("a", "100", "b", "200"))
                                                         .build())
-                                        .secureContext("jim")
+                                        .secureContext(enrollIdentifier_1)
                                         .type(ChaincodeSpec.Type.GOLANG)
                                         .build())
                         .build())
@@ -135,7 +142,7 @@ public class FabricExample {
                                                         .function("invoke")
                                                         .args(Arrays.asList("a", "b", "10"))
                                                         .build())
-                                        .secureContext("jim")
+                                        .secureContext(enrollIdentifier_1)
                                         .type(ChaincodeSpec.Type.GOLANG)
                                         .build())
                         .build())
@@ -151,12 +158,12 @@ public class FabricExample {
                         return FABRIC.getTransaction(chaincodeOpResult.getResult().getMessage());
                     }
                 })
-                .subscribe(new Action1<Transaction>() {
-                    @Override
-                    public void call(Transaction transaction) {
-                        System.out.printf("Get transaction:%s\n", transaction);
-                    }
-                });
+                .subscribe(transactionSuccess -> {
+                            System.out.printf("Get transaction:%s\n", transactionSuccess);
+                        },
+                        transactionError -> {
+                            System.out.printf("Error with transaction %s\n", transactionError);
+                        });
 
 
         FABRIC.chaincode(
@@ -175,7 +182,7 @@ public class FabricExample {
                                                         .function("query")
                                                         .args(Collections.singletonList("b"))
                                                         .build())
-                                        .secureContext("jim")
+                                        .secureContext(enrollIdentifier_1)
                                         .type(ChaincodeSpec.Type.GOLANG)
                                         .build())
                         .build())
@@ -202,7 +209,7 @@ public class FabricExample {
                                                         .function("query")
                                                         .args(Collections.singletonList("c"))
                                                         .build())
-                                        .secureContext("jim")
+                                        .secureContext(enrollIdentifier_1)
                                         .type(ChaincodeSpec.Type.GOLANG)
                                         .build())
                         .build())
@@ -263,8 +270,8 @@ public class FabricExample {
 
         FABRIC.createRegistrar(
                 Secret.builder()
-                        .enrollId("lukas")
-                        .enrollSecret("NPKYL39uKbkj1")
+                        .enrollId(enrollIdentifier_2)
+                        .enrollSecret(ENROLL_SECRET_2)
                         .build())
                 .subscribe(new Action1<OK>() {
                     @Override
@@ -279,7 +286,7 @@ public class FabricExample {
                     }
                 });
 
-        FABRIC.deleteRegistrar("jim").subscribe(new Action1<OK>() {
+        FABRIC.deleteRegistrar(enrollIdentifier_1).subscribe(new Action1<OK>() {
             @Override
             public void call(OK ok) {
                 System.out.printf("Delete registrar ok message:%s\n", ok);
