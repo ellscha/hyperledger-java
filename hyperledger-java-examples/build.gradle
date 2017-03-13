@@ -18,7 +18,8 @@ description = 'Example for rest client SDK'
 
 dependencies {
     compile 'org.slf4j:slf4j-log4j12:1.7.21'
-    compile project(':hyperledger-java-client')
+    compile project(':hyperledger-java-client'
+    )
 }
 
 apply plugin: 'application'
