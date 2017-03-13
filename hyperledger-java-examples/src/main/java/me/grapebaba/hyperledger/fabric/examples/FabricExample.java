@@ -33,34 +33,31 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+
 /**
  * Fabric API endpoint usage.
  */
 public class FabricExample {
     private static final HttpLoggingInterceptor HTTP_LOGGING_INTERCEPTOR = new HttpLoggingInterceptor();
-    private static final String peerURL = "https://da4125678cbc4695913a14d0d5ffd909-vp3.us.blockchain.ibm.com:5003";
-    private static final String enrollIdentifier_1 = "user_type2_1";
-    private static final String enrollSecret_1 = "db246b9fc7";
-    private static final String enrollIdentifier_2 = "user_type1_1";
-    private static final String enrollSecret_2 = "2bae265410";
+    private final static Config config = new Config();
 
     static {
         HTTP_LOGGING_INTERCEPTOR.setLevel(HttpLoggingInterceptor.Level.BODY);
     }
 
-    private static final Fabric FABRIC = Hyperledger.fabric(peerURL, HTTP_LOGGING_INTERCEPTOR);
+    private static final Fabric FABRIC = Hyperledger.fabric(config.peerURL, HTTP_LOGGING_INTERCEPTOR);
 
     private static final Logger LOG = LoggerFactory.getLogger(FabricExample.class);
 
     public static void main(String[] args) throws Exception {
-        FABRIC.deleteRegistrar(enrollIdentifier_1).subscribe(new Action1<OK>() {
+        FABRIC.deleteRegistrar(config.enrollIdentifier_1).subscribe(new Action1<OK>() {
             @Override
             public void call(OK ok) {
                 System.out.printf("Delete registrar ok message:%s\n", ok);
             }
         });
 
-        FABRIC.deleteRegistrar(enrollIdentifier_2).subscribe(new Action1<OK>() {
+        FABRIC.deleteRegistrar(config.enrollIdentifier_2).subscribe(new Action1<OK>() {
             @Override
             public void call(OK ok) {
                 System.out.printf("Delete registrar ok message:%s\n", ok);
@@ -68,8 +65,8 @@ public class FabricExample {
         });
         FABRIC.createRegistrar(
                 Secret.builder()
-                        .enrollId(enrollIdentifier_1)
-                        .enrollSecret(enrollSecret_1)
+                        .enrollId(config.enrollIdentifier_1)
+                        .enrollSecret(config.enrollSecret_1)
                         .build())
                 .subscribe(new Action1<OK>() {
                     @Override
@@ -84,7 +81,7 @@ public class FabricExample {
                     }
                 });
 
-        FABRIC.getRegistrar(enrollIdentifier_1)
+        FABRIC.getRegistrar(config.enrollIdentifier_1)
                 .subscribe(new Action1<OK>() {
                     @Override
                     public void call(OK ok) {
@@ -92,7 +89,7 @@ public class FabricExample {
                     }
                 });
 
-        FABRIC.getRegistrarECERT(enrollIdentifier_1)
+        FABRIC.getRegistrarECERT(config.enrollIdentifier_1)
                 .subscribe(new Action1<OK>() {
                     @Override
                     public void call(OK ok) {
@@ -100,7 +97,7 @@ public class FabricExample {
                     }
                 });
 
-        FABRIC.getRegistrarTCERT(enrollIdentifier_1)
+        FABRIC.getRegistrarTCERT(config.enrollIdentifier_1)
                 .subscribe(new Action1<OK1>() {
                     @Override
                     public void call(OK1 ok) {
@@ -126,7 +123,7 @@ public class FabricExample {
                                                         .function("init")
                                                         .args(Arrays.asList("a", "100", "b", "200"))
                                                         .build())
-                                        .secureContext(enrollIdentifier_1)
+                                        .secureContext(config.enrollIdentifier_1)
                                         .type(ChaincodeSpec.Type.GOLANG)
                                         .build())
                         .build())
@@ -153,7 +150,7 @@ public class FabricExample {
                                                         .function("invoke")
                                                         .args(Arrays.asList("a", "b", "10"))
                                                         .build())
-                                        .secureContext(enrollIdentifier_1)
+                                        .secureContext(config.enrollIdentifier_1)
                                         .type(ChaincodeSpec.Type.GOLANG)
                                         .build())
                         .build())
@@ -193,7 +190,7 @@ public class FabricExample {
                                                         .function("query")
                                                         .args(Collections.singletonList("b"))
                                                         .build())
-                                        .secureContext(enrollIdentifier_1)
+                                        .secureContext(config.enrollIdentifier_1)
                                         .type(ChaincodeSpec.Type.GOLANG)
                                         .build())
                         .build())
@@ -220,7 +217,7 @@ public class FabricExample {
                                                         .function("query")
                                                         .args(Collections.singletonList("c"))
                                                         .build())
-                                        .secureContext(enrollIdentifier_1)
+                                        .secureContext(config.enrollIdentifier_1)
                                         .type(ChaincodeSpec.Type.GOLANG)
                                         .build())
                         .build())
@@ -281,8 +278,8 @@ public class FabricExample {
 
         FABRIC.createRegistrar(
                 Secret.builder()
-                        .enrollId(enrollIdentifier_2)
-                        .enrollSecret(enrollSecret_2)
+                        .enrollId(config.enrollIdentifier_2)
+                        .enrollSecret(config.enrollSecret_2)
                         .build())
                 .subscribe(new Action1<OK>() {
                     @Override
@@ -297,14 +294,14 @@ public class FabricExample {
                     }
                 });
 
-        FABRIC.deleteRegistrar(enrollIdentifier_1).subscribe(new Action1<OK>() {
+        FABRIC.deleteRegistrar(config.enrollIdentifier_1).subscribe(new Action1<OK>() {
             @Override
             public void call(OK ok) {
                 System.out.printf("Delete registrar ok message:%s\n", ok);
             }
         });
 
-        FABRIC.deleteRegistrar(enrollIdentifier_2).subscribe(new Action1<OK>() {
+        FABRIC.deleteRegistrar(config.enrollIdentifier_2).subscribe(new Action1<OK>() {
             @Override
             public void call(OK ok) {
                 System.out.printf("Delete registrar ok message:%s\n", ok);
